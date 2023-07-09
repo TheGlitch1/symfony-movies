@@ -18,7 +18,17 @@ class MoviesController extends AbstractController
         ]);
     }
 
+    #[Route('/movies/{name}', name: 'movie', defaults:['name' => NULL], methods:['GET','HEAD'])]
+    public function movie($name): JsonResponse
+    {
+        return $this->json([
+            'message' => 'Welcome to your new controller! ' . $name,
+            'path' => 'src/Controller/MoviesController.php',
+        ]);
+    }
+
     /**
+     * Communly used annotation
      * @Route("/old",name="old")
      */
     public function oldMethod(): Response {
