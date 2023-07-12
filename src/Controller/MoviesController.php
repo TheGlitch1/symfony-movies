@@ -9,13 +9,22 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class MoviesController extends AbstractController
 {
-    #[Route('/movies', name: 'app_movies')]
+    #[Route('/movies', name: 'movies')]
     public function index(): Response //JsonResponse
     {
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/MoviesController.php',
+
+        $movies = [
+            "Avenger :End Game","Inception", "Tenet",
+        ];
+
+        return $this->render('index.html.twig', [
+            'title' => "Welcome to Movies app",
+            'movies' => $movies
         ]);
+        // return $this->json([
+        //     'message' => 'Welcome to your new controller!',
+        //     'path' => 'src/Controller/MoviesController.php',
+        // ]);
     }
 
     #[Route('/movies/{name}', name: 'movie', defaults:['name' => NULL], methods:['GET','HEAD'])]
