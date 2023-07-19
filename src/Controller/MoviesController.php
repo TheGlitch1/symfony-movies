@@ -3,67 +3,52 @@
 namespace App\Controller;
 
 use App\Entity\Movie;
+use App\Form\MovieFormType;
 use App\Repository\MovieRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class MoviesController extends AbstractController
 {
 
-    private $em;
-
-    public function __construct(EntityManagerInterface $em)
-    {
-        $this->em = $em;
+    private $movieRepositoy;  
+    public function __construct(MovieRepository  $movieRepositoy) {
+        $this->movieRepositoy = $movieRepositoy;
     }
+    
 
-    #[Route('/movies', name: 'all_movies')]
-    public function index(): Response //JsonResponse
+    #[Route('/movies',methods:['GET'], name: 'app_movies')]
+    public function index(): Response
     {
 
-        $repository = $this->em->getRepository(Movie::class);
-
-        $movies = $repository->findAll(); // Use when noarmal select
-        // $movies = $repository->find(13); //use when where close
-        // $movies = $repository->findBy([],['id' => 'DESC']); //use when where close// SQL = select * from movies order by id DESC
-        // $movies = $repository->findOneBy(['id' => 14],['id' => 'DESC']); 
-        
-
-        // dd($movies);
-        
-        return $this->render('index.html.twig', [
-            'title' => "Welcome to Movies app",
-            'movies' => $movies
-        ]);
-
-
-        // return $this->json([
-        //     'message' => 'Welcome to your new controller!',
-        //     'path' => 'src/Controller/MoviesController.php',
-        // ]);
-    }
-
-    #[Route('/movies/{name}', name: 'movie', defaults:['name' => NULL], methods:['GET','HEAD'])]
-    public function movie($name): JsonResponse
-    {
-        return $this->json([
-            'message' => 'Welcome to your new controller! ' . $name,
-            'path' => 'src/Controller/MoviesController.php',
+        $movies = $this->movieRepositoy->findAll();
+        return $this->render('movies/index.html.twig', [
+            'controller_name' => 'MoviesController',
+            'movies'=> $movies
         ]);
     }
 
-    /**
-     * Communly used annotation
-     * @Route("/old",name="old")
-     */
-    // public function oldMethod(): Response {
-    //     //return type decoration 
-    //     return $this->json([
-    //         'message' => 'Welcome to your old controller!',
-    //         'path' => 'src/Controller/MoviesController.php',
-    //     ]);
-    // }
+    #[Route('/movies/create',methods:['GET'], name: 'create_movies')]
+    public function create() : Response 
+    {
+        $movie = new Movie();
+        $form = $this->createForm(MovieFormType::class, $movie);
+
+        return $this->render('movies/create.html.twig',[
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/movies/{id}',methods:['GET'] , name: 'show_movies')]
+    public function show(int $id): Response
+    {
+        $movie = $this->movieRepositoy->find($id);
+        return $this->render('movies/show.html.twig', [
+            'controller_name' => 'MoviesController',
+            'movie'=> $movie
+        ]);
+    }
+
+   
 }
