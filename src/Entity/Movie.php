@@ -112,7 +112,6 @@ class Movie
     public function removeActor(Actor $actor): static
     {
         $this->actors->removeElement($actor);
-
         return $this;
     }
 
