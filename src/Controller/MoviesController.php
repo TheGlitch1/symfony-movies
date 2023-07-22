@@ -89,7 +89,7 @@ class MoviesController extends AbstractController
                             $this->GetParameter('kernel.project_dir') . $movie->getImagePath();
                     }
                     $newFileName = uniqid() . '.' . $imagePath->guessExtension();
-
+                
                     try {
                         $imagePath->move(
                             $this->getParameter('kernel.project_dir') . '/public/uploads',
