@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Movie;
 use App\Form\MovieFormType;
 use App\Repository\MovieRepository;
+use App\Services\AgeService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,10 +18,12 @@ class MoviesController extends AbstractController
 
     private $em;
     private $movieRepository;
-    public function __construct(MovieRepository  $movieRepository, EntityManagerInterface $em)
+    private $ageService;
+    public function __construct(MovieRepository  $movieRepository, EntityManagerInterface $em, AgeService $AgeService)
     {
         $this->movieRepository = $movieRepository;
         $this->em = $em;
+        $this->ageService = $AgeService;
     }
 
 
@@ -132,15 +135,43 @@ class MoviesController extends AbstractController
         return $this->redirectToRoute('movies');
     }
 
-    #[Route('/movies/{id}', methods: ['GET'], name: 'show_movies')]
-    public function show(int $id): Response
+
+    // This is simple implementation of a srvice: 
+    #[Route('/movies/show/{id}', methods: ['GET'], name: 'show_movies')]
+    public function show(int $id, AgeService $ageService): Response
     {
         $movie = $this->movieRepository->find($id);
+        
+        $Year = $movie->getReleaseYear();
+        echo $Year . " And age is " . $ageService->calculateAge($Year);
+
+        // $movie->AgeCalc = $ageService->calculateAge($Year);
+
+
+        return $this->render('movies/show.html.twig', [
+            'controller_name' => 'MoviesController',
+            'movie' => $movie,
+        ]);
+    }
+
+    //Implementation of service within the controller injection ( dependency injection)
+    #[Route('/movies/{id}', methods: ['GET'], name: 'shows_movies')]
+    public function shows(int $id): Response
+    {
+        $movie = $this->movieRepository->find($id);
+        
+        $Year = $movie->getReleaseYear();
+        echo $Year . " And age with contructure is " . $this->ageService->calculateAge($Year);
+        $movie['ageDiff'] = $this->ageService->calculateAge($Year);
+        dump($movie);
+        //TODO: logger interface to check and review
+        die();
+
+
         return $this->render('movies/show.html.twig', [
             'controller_name' => 'MoviesController',
             'movie' => $movie
         ]);
     }
-
 
 }

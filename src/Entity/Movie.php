@@ -25,6 +25,8 @@ class Movie
     #[Assert\NotBlank]
     private ?int $releaseYear = null;
 
+    // private ?int $diffAge = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\NotBlank]
     private ?string $description = null;
@@ -147,4 +149,5 @@ class Movie
 
         return $this;
     }
+
 }
